@@ -31,6 +31,14 @@ class AuthController {
         password
       );
       const token = await userCredential.user.getIdToken();
+      const user = await User.getUserByUid(userCredential.user.uid);
+
+      if (!user) {
+        return res.status(401).send({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
 
       return res.status(200).send({
         success: true,
