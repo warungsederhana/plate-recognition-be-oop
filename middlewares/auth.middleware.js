@@ -22,16 +22,16 @@ const isUserMiddleware = async (req, res, next) => {
       });
     }
 
-    const user = await User.getUserByUid(id);
+    // tidak perlu karena tidak ada user biasa di firestore
 
-    if (!user) {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
-
-    req.user = user;
+    // const user = await User.getUserByUid(id);
+    // if (!user) {
+    //   return res.status(401).send({
+    //     success: false,
+    //     message: "Unauthorized",
+    //   });
+    // }
+    // req.user = user;
     return next();
   } catch (error) {
     res.status(error.code === "auth/id-token-expired" ? 401 : 500).send({
