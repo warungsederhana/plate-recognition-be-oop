@@ -17,8 +17,8 @@ class NegaraAsal {
       id: z.string({ required_error: "ID negara asal is required" }),
       nama_negara: z.string({ required_error: "Nama negara asal is required" }),
       kode_negara: z.string({ required_error: "Kode negara asal is required" }),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 
@@ -103,7 +103,6 @@ class NegaraAsal {
     // Initialize Firestore reference
     const dbRef = FirebaseAdmin.firestore().collection("NegaraAsal");
     const validData = convertStringsToDateObjects(data);
-
     const validatedUpdate = this.validate(validData);
 
     // Cek apakah nama_negara sudah ada dalam database dan bukan pada dokumen yang sama
@@ -118,13 +117,19 @@ class NegaraAsal {
       throw new Error("Kode negara asal sudah digunakan.");
     }
 
+    // Ambil nilai createdAt sebelum pembaruan
+    const existingData = await dbRef.doc(this.uid).get();
+
+    const createdAt = existingData.data().createdAt;
+
+    validatedUpdate.createdAt = createdAt;
     validatedUpdate.updatedAt = new Date();
     await dbRef.doc(this.uid).update({
       ...validatedUpdate,
     });
 
-    const updatedNegaraAsal = (await dbRef.doc(this.uid).get()).data();
-    return updateTimestampsInObject(updatedNegaraAsal);
+    const updatedNegaraAsal = await dbRef.doc(this.uid).get();
+    return updateTimestampsInObject(updatedNegaraAsal.data());
   }
 
   async delete() {

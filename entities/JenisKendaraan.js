@@ -25,8 +25,8 @@ class JenisKendaraan {
       id_jenis_mapping: z.string().optional(),
       id_model_kendaraan: z.string().optional(),
       kategori_jenis: z.string().optional(),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 
@@ -137,6 +137,11 @@ class JenisKendaraan {
       throw new Error("Kode jenis kendaraan sudah digunakan.");
     }
 
+    // Ambil nilai createdAt sebelum pembaruan
+    const existingData = await dbRef.doc(this.uid).get();
+    const createdAt = existingData.data().createdAt;
+
+    validatedUpdate.createdAt = createdAt;
     validatedUpdate.updatedAt = new Date();
     await dbRef.doc(this.uid).update({
       ...validatedUpdate,

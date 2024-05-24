@@ -19,8 +19,8 @@ class User {
       email: z.string({ required_error: "Email is required" }),
       nama: z.string({ required_error: "Nama is required" }),
       isAdmin: z.boolean().optional(),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 

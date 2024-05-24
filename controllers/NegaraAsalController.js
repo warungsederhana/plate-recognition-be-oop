@@ -64,6 +64,7 @@ class NegaraAsalController {
         data: negaraAsal,
       });
     } catch (error) {
+      console.log(error.message + "ini error");
       res.status(500).json({
         success: false,
         message: error.message,

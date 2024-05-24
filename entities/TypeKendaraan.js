@@ -23,8 +23,8 @@ class TypeKendaraan {
       id_jenis_kendaraan: z.string({ required_error: "ID jenis kendaraan is required" }),
       id_merek_kendaraan: z.string({ required_error: "ID merek kendaraan is required" }),
       kode_negara_asal: z.string({ required_error: "Kode negara asal is required" }),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 
@@ -189,6 +189,11 @@ class TypeKendaraan {
       throw new Error("Kode negara asal tidak ditemukan.");
     }
 
+    // Ambil nilai createdAt sebelum pembaruan
+    const existingData = await dbRef.doc(this.uid).get();
+    const createdAt = existingData.data().createdAt;
+
+    validatedUpdate.createdAt = createdAt;
     validatedUpdate.updatedAt = new Date();
     await dbRef.doc(this.uid).update({
       ...validatedUpdate,

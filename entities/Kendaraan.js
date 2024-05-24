@@ -19,7 +19,7 @@ class Kendaraan {
     this.id_kelurahan = data.id_kelurahan;
     this.no_telp = data.no_telp;
     this.id_jenis_kendaraan = data.id_jenis_kendaraan;
-    this.id_merk_kendaraan = data.id_merk_kendaraan;
+    this.id_merek_kendaraan = data.id_merek_kendaraan;
     this.id_type_kendaraan = data.id_type_kendaraan;
     this.id_model_kendaraan = data.id_model_kendaraan;
     this.id_jenis_map = data.id_jenis_map;
@@ -96,7 +96,7 @@ class Kendaraan {
       id_kelurahan: z.string().optional(),
       no_telp: z.string({ required_error: "No telepon is required" }),
       id_jenis_kendaraan: z.string({ required_error: "ID jenis kendaraan is required" }),
-      id_merk_kendaraan: z.string({ required_error: "ID merk kendaraan is required" }),
+      id_merek_kendaraan: z.string({ required_error: "ID merk kendaraan is required" }),
       id_type_kendaraan: z.string({ required_error: "ID type kendaraan is required" }),
       id_model_kendaraan: z.string({ required_error: "ID model kendaraan is required" }),
       id_jenis_map: z.string().optional(),
@@ -165,8 +165,8 @@ class Kendaraan {
       tanggal_jatuh_tempo_dpwkp: z.coerce.date().optional(),
       subsidi: z.boolean(),
       njkb: z.number().nonnegative(),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 
@@ -197,7 +197,7 @@ class Kendaraan {
       id_kelurahan: this.id_kelurahan,
       no_telp: this.no_telp,
       id_jenis_kendaraan: this.id_jenis_kendaraan,
-      id_merk_kendaraan: this.id_merk_kendaraan,
+      id_merek_kendaraan: this.id_merek_kendaraan,
       id_type_kendaraan: this.id_type_kendaraan,
       id_model_kendaraan: this.id_model_kendaraan,
       id_jenis_map: this.id_jenis_map,
@@ -319,6 +319,11 @@ class Kendaraan {
     const validData = convertStringsToDateObjects(data);
     const validatedUpdate = this.validate(validData);
 
+    // Ambil nilai createdAt sebelum pembaruan
+    const existingData = await dbRef.doc(this.uid).get();
+    const createdAt = existingData.data().createdAt;
+
+    validatedUpdate.createdAt = createdAt;
     validatedUpdate.updatedAt = new Date();
     await dbRef.doc(this.uid).update({
       ...validatedUpdate,

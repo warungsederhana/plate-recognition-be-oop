@@ -53,6 +53,8 @@ exports.convertDatesToFirestoreTimestamps = (inputData) => {
     "tanggal_max_bayar_pkb",
     "tanggal_max_bayar_swdkllj",
     "tanggal_jatuh_tempo_dpwkp",
+    "createdAt",
+    "updatedAt",
   ]; // Add or remove fields based on your needs
 
   for (const field of dateFields) {
@@ -83,25 +85,32 @@ exports.convertStringsToDateObjects = (inputObject) => {
     "tanggal_max_bayar_swdkllj",
     "tanggal_max_bayar_bbn",
     "tanggal_jatuh_tempo_dpwkp",
+    "createdAt",
+    "updatedAt",
   ];
 
   // Iterate over the object to find and convert date strings
   Object.keys(inputObject).forEach((key) => {
-    if (dateKeys.includes(key) && inputObject[key]) {
+    if (dateKeys.includes(key) && typeof inputObject[key] === "string") {
       try {
         const parts = inputObject[key].split("/");
-        // Convert to Date object and adjust month index (0-based)
-        const date = new Date(
-          parseInt(parts[2], 10),
-          parseInt(parts[1], 10) - 1,
-          parseInt(parts[0], 10)
-        );
-        inputObject[key] = date;
+        if (parts.length === 3) {
+          // Convert to Date object and adjust month index (0-based)
+          const date = new Date(
+            parseInt(parts[2], 10),
+            parseInt(parts[1], 10) - 1,
+            parseInt(parts[0], 10)
+          );
+          inputObject[key] = date;
+        } else {
+          console.error(`Invalid date format for key '${key}':`, inputObject[key]);
+        }
       } catch (error) {
         console.error(`Error converting date for key '${key}':`, error);
         // Handle the error as needed
       }
     }
+    // If the key is not in dateKeys or the value is not a string, continue to the next key
   });
 
   return inputObject;

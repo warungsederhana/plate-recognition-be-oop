@@ -17,8 +17,8 @@ class MerekKendaraan {
       id: z.string({ required_error: "ID merek kendaraan is required" }),
       nama_merek: z.string({ required_error: "Nama merek kendaraan is required" }),
       kode_negara_asal: z.string({ required_error: "Kode negara asal is required" }),
-      createdAt: z.date().optional(),
-      updatedAt: z.date().optional(),
+      createdAt: z.coerce.date().optional(),
+      updatedAt: z.coerce.date().optional(),
     });
   }
 
@@ -105,6 +105,11 @@ class MerekKendaraan {
       throw new Error("Nama jenis kendaraan sudah digunakan.");
     }
 
+    // Ambil nilai createdAt sebelum pembaruan
+    const existingData = await dbRef.doc(this.uid).get();
+    const createdAt = existingData.data().createdAt;
+
+    validatedUpdate.createdAt = createdAt;
     validatedUpdate.updatedAt = new Date();
     await dbRef.doc(this.uid).update({
       ...validatedUpdate,
