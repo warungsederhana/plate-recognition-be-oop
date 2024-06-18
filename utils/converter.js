@@ -115,3 +115,30 @@ exports.convertStringsToDateObjects = (inputObject) => {
 
   return inputObject;
 };
+
+exports.convertMoneyFormat = (inputObject) => {
+  const moneyKeys = [
+    "bbn1_pokok",
+    "bbn1_denda",
+    "pkb_pokok",
+    "pkb_denda",
+    "pkb_bunga",
+    "swdkllj_pokok",
+    "swdkllj_denda",
+    "stnk",
+    "njkb",
+    "dpwkp",
+  ];
+
+  // Iterate over the object to find and convert money value
+  Object.keys(inputObject).forEach((key) => {
+    if (moneyKeys.includes(key)) {
+      const value = inputObject[key];
+      try {
+        inputObject[key] = value.toLocaleString("id-ID");
+      } catch (error) {
+        console.error(`Error converting money for key '${key}':`, error);
+      }
+    }
+  });
+};

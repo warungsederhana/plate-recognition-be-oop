@@ -1,9 +1,13 @@
 const Kendaraan = require("../entities/Kendaraan");
+const { convertMoneyFormat } = require("../utils/converter");
 
 class KendaraanController {
   async getAllKendaraan(req, res) {
     try {
       const kendaraans = await Kendaraan.getAll();
+      kendaraans.forEach((kendaraan) => {
+        return convertMoneyFormat(kendaraan);
+      });
       const size = kendaraans.length;
       res.status(200).json({
         success: true,
@@ -40,6 +44,7 @@ class KendaraanController {
     const { uid } = req.params;
     try {
       const kendaraan = await Kendaraan.getByUid(uid);
+      convertMoneyFormat(kendaraan);
       res.status(200).json({
         success: true,
         message: "Kendaraan fetched successfully",
@@ -75,6 +80,7 @@ class KendaraanController {
     try {
       const kendaraan = await Kendaraan.getByUid(uid);
       await kendaraan.update(req.body);
+      convertMoneyFormat(kendaraan);
       res.status(200).json({
         success: true,
         message: "Kendaraan updated successfully",
